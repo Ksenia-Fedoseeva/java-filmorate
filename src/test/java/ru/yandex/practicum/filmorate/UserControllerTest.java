@@ -88,6 +88,6 @@ public class UserControllerTest {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.create(user);
         });
-        assertEquals("Дата рождения не может быть в будущем.", exception.getMessage());
+        assertEquals("Дата рождения не заполнена.", exception.getMessage());
     }
 }
