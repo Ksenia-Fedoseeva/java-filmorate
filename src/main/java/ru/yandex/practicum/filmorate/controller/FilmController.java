@@ -14,8 +14,8 @@ import java.util.*;
 public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
-    private final int MAX_DESCRIPTION = 200;
-    private final LocalDate EARLIEST_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    private final int maxDescription = 200;
+    private final LocalDate earliestReleaseDate = LocalDate.of(1895, 12, 28);
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -75,7 +75,7 @@ public class FilmController {
             log.error("Валидация не пройдена: описание фильма не заполнено.");
             throw new ValidationException("Описание фильма не заполнено.");
         }
-        if (film.getDescription().length() > MAX_DESCRIPTION) {
+        if (film.getDescription().length() > maxDescription) {
             log.error("Валидация не пройдена: длина описания фильма превышает 200 символов.");
             throw new ValidationException("Описание фильма не может превышать 200 символов.");
         }
@@ -83,7 +83,7 @@ public class FilmController {
             log.error("Валидация не пройдена: дата релиза не заполнена.");
             throw new ValidationException("Дата релиза не заполнена.");
         }
-        if (film.getReleaseDate().isBefore(EARLIEST_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(earliestReleaseDate)) {
             log.error("Валидация не пройдена: дата релиза фильма раньше 28 декабря 1895 года.");
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года.");
         }
@@ -103,13 +103,13 @@ public class FilmController {
                 log.error("Валидация не пройдена: описание фильма не может быть пустым.");
                 throw new ValidationException("Описание фильма не может быть пустым.");
             }
-            if (film.getDescription().length() > MAX_DESCRIPTION) {
+            if (film.getDescription().length() > maxDescription) {
                 log.error("Валидация не пройдена: длина описания фильма превышает 200 символов.");
                 throw new ValidationException("Описание фильма не может превышать 200 символов.");
             }
         }
         if (film.getReleaseDate() != null) {
-            if (film.getReleaseDate().isBefore(EARLIEST_RELEASE_DATE)) {
+            if (film.getReleaseDate().isBefore(earliestReleaseDate)) {
                 log.error("Валидация не пройдена: дата релиза фильма раньше 28 декабря 1895 года.");
                 throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года.");
             }
