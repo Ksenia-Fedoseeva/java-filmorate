@@ -68,4 +68,109 @@ public class FilmControllerTest {
         });
         assertEquals("Продолжительность фильма должна быть положительным числом.", exception.getMessage());
     }
+
+    @Test
+    void shouldThrowExceptionIfNameIsNull() {
+        Film film = new Film();
+        film.setName(null);
+        film.setDescription("A good movie");
+        film.setReleaseDate(LocalDate.now());
+        film.setDuration(120);
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            controller.create(film);
+        });
+        assertEquals("Название фильма не может быть пустым.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfDescriptionIsNull() {
+        Film film = new Film();
+        film.setName("Test Movie");
+        film.setDescription(null);
+        film.setReleaseDate(LocalDate.now());
+        film.setDuration(120);
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            controller.create(film);
+        });
+        assertEquals("Описание фильма не заполнено.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfReleaseDateIsNull() {
+        Film film = new Film();
+        film.setName("Test Movie");
+        film.setDescription("A good movie");
+        film.setReleaseDate(null);
+        film.setDuration(120);
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            controller.create(film);
+        });
+        assertEquals("Дата релиза не заполнена.", exception.getMessage());
+    }
+
+    @Test
+    void shouldUpdateFilmWithValidFields() {
+        Film film = new Film();
+        film.setId(1L);
+        film.setName("Test Movie");
+        film.setDescription("A good movie");
+        film.setReleaseDate(LocalDate.now());
+        film.setDuration(120);
+
+        controller.create(film);
+
+        Film updatedFilm = new Film();
+        updatedFilm.setId(1L);
+        updatedFilm.setName("Updated Movie");
+        updatedFilm.setDescription("Updated description");
+
+        Film result = controller.update(updatedFilm);
+        assertEquals("Updated Movie", result.getName());
+        assertEquals("Updated description", result.getDescription());
+        assertEquals(film.getReleaseDate(), result.getReleaseDate());
+    }
+
+    @Test
+    void shouldNotUpdateFieldsIfNullProvided() {
+        Film film = new Film();
+        film.setId(1L);
+        film.setName("Test Movie");
+        film.setDescription("A good movie");
+        film.setReleaseDate(LocalDate.now());
+        film.setDuration(120);
+
+        controller.create(film);
+
+        Film updatedFilm = new Film();
+        updatedFilm.setId(1L);
+
+        Film result = controller.update(updatedFilm);
+
+        assertEquals("Test Movie", result.getName());
+        assertEquals("A good movie", result.getDescription());
+        assertEquals(film.getReleaseDate(), result.getReleaseDate());
+        assertEquals(film.getDuration(), result.getDuration());
+    }
+
+    @Test
+    void shouldThrowExceptionIfFilmIdIsNotFound() {
+        Film film = new Film();
+        film.setId(1L);
+        film.setName("Test Movie");
+        film.setDescription("A good movie");
+        film.setReleaseDate(LocalDate.now());
+        film.setDuration(120);
+
+        Film updatedFilm = new Film();
+        updatedFilm.setId(999L);
+        updatedFilm.setName("Updated Movie");
+
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            controller.update(updatedFilm);
+        });
+        assertEquals("Фильм с таким ID не найден.", exception.getMessage());
+    }
 }

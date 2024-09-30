@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -44,6 +45,10 @@ public class UserController {
     }
 
     private void validateUser(User user) {
+        if (user.getBirthday() == null) {
+            log.error("Валидация не пройдена: дата рождения не заполнена.");
+            throw new ValidationException("Дата рождения не заполнена.");
+        }
         if (user.getEmail() == null || !user.getEmail().contains("@")) {
             log.error("Валидация не пройдена: некорректный email.");
             throw new ValidationException("Имейл должен быть указан и содержать символ @.");
@@ -52,7 +57,7 @@ public class UserController {
             log.error("Валидация не пройдена: некорректный login.");
             throw new ValidationException("Логин не может быть пустым и содержать пробелы.");
         }
-        if (user.getBirthday().isAfter(java.time.LocalDate.now())) {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             log.error("Валидация не пройдена: дата рождения в будущем.");
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
