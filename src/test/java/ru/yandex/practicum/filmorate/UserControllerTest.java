@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -11,7 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
 
-    private final UserController controller = new UserController();
+    private UserController controller;
+
+    @BeforeEach
+    void setUp() {
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        UserService userService = new UserService(userStorage);
+        controller = new UserController(userService);
+    }
 
     @Test
     void shouldThrowExceptionIfEmailIsInvalid() {
@@ -23,7 +33,7 @@ public class UserControllerTest {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.create(user);
         });
-        assertEquals("Имейл должен быть указан и содержать символ @.", exception.getMessage());
+        assertEquals("Email должен быть указан и содержать символ @.", exception.getMessage());
     }
 
     @Test
@@ -62,7 +72,7 @@ public class UserControllerTest {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
             controller.create(user);
         });
-        assertEquals("Имейл должен быть указан и содержать символ @.", exception.getMessage());
+        assertEquals("Email должен быть указан и содержать символ @.", exception.getMessage());
     }
 
     @Test

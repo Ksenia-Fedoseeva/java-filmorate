@@ -1,9 +1,14 @@
 package ru.yandex.practicum.filmorate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -11,7 +16,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FilmControllerTest {
 
-    private final FilmController controller = new FilmController();
+    private FilmController controller;
+
+    @BeforeEach
+    void setUp() {
+        InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmService filmService = new FilmService(filmStorage, userStorage);
+        controller = new FilmController(filmService);
+    }
 
     @Test
     void shouldThrowExceptionIfNameIsEmpty() {
@@ -168,9 +181,9 @@ public class FilmControllerTest {
         updatedFilm.setId(999L);
         updatedFilm.setName("Updated Movie");
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             controller.update(updatedFilm);
         });
-        assertEquals("Фильм с таким ID не найден.", exception.getMessage());
+        assertEquals("Фильм с ID 999 не найден.", exception.getMessage());
     }
 }
