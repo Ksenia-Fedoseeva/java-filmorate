@@ -19,9 +19,6 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    private final int maxDescription = 200;
-    private final LocalDate earliestReleaseDate = LocalDate.of(1895, 12, 28);
-
     public Film addFilm(Film film) {
         log.info("Добавление фильма – {}", film);
         return filmStorage.addFilm(film);
