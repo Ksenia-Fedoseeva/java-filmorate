@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,13 +17,11 @@ public class UserService {
     private final UserStorage userStorage;
 
     public User addUser(User user) {
-        validateUser(user);
         log.info("Добавление юзера – {}", user);
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
-        validateUser(user);
         log.info("Обновление юзера – {}", user);
         return userStorage.updateUser(user);
     }
@@ -74,22 +70,4 @@ public class UserService {
                 .map(userStorage::getUserById)
                 .collect(Collectors.toList());
     }
-
-    private void validateUser(User user) {
-        if (user.getBirthday() == null) {
-            throw new ValidationException("Дата рождения не заполнена.");
-        }
-        if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            throw new ValidationException("Email должен быть указан и содержать символ @.");
-        }
-        if (user.getLogin() == null || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы.");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем.");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-}
 }

@@ -33,8 +33,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilmById(Long id) {
-        checkFilmExist(id);
-        return films.get(id);
+        Film film = films.get(id);
+
+        if (film == null) {
+            throw new NotFoundException("Фильм с ID " + id + " не найден.");
+        }
+
+        return film;
     }
 
     private long getNextId() {

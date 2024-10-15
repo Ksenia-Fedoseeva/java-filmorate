@@ -1,131 +1,159 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SpringBootTest
+@AutoConfigureMockMvc
 public class FilmControllerTest {
 
-    private FilmController controller;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
-        InMemoryUserStorage userStorage = new InMemoryUserStorage();
-        FilmService filmService = new FilmService(filmStorage, userStorage);
-        controller = new FilmController(filmService);
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void shouldThrowExceptionIfNameIsEmpty() {
+    void shouldThrowExceptionIfNameIsEmpty() throws Exception {
         Film film = new Film();
         film.setName("");
         film.setDescription("A good movie");
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Название фильма не может быть пустым.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'name'. Название не может быть пустым."));
     }
 
     @Test
-    void shouldThrowExceptionIfDescriptionIsTooLong() {
+    void shouldThrowExceptionIfDescriptionIsTooLong() throws Exception {
         Film film = new Film();
         film.setName("Test Movie");
         film.setDescription("A".repeat(201));
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Описание фильма не может превышать 200 символов.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'description'. Описание не может превышать 200 символов."));
     }
 
     @Test
-    void shouldThrowExceptionIfReleaseDateIsTooEarly() {
+    void shouldThrowExceptionIfReleaseDateIsTooEarly() throws Exception {
         Film film = new Film();
         film.setName("Test Movie");
         film.setDescription("A good movie");
-        film.setReleaseDate(LocalDate.of(1890, 1, 1));
+        film.setReleaseDate(LocalDate.of(1895, 1, 1));
         film.setDuration(120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Дата релиза не может быть раньше 28 декабря 1895 года.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'releaseDate'. Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
     }
 
     @Test
-    void shouldThrowExceptionIfDurationIsNegative() {
+    void shouldThrowExceptionIfDurationIsNegative() throws Exception {
         Film film = new Film();
         film.setName("Test Movie");
         film.setDescription("A good movie");
         film.setReleaseDate(LocalDate.now());
         film.setDuration(-120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Продолжительность фильма должна быть положительным числом.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'duration'. Продолжительность фильма должна быть положительным числом."));
     }
 
     @Test
-    void shouldThrowExceptionIfNameIsNull() {
+    void shouldThrowExceptionIfNameIsNull() throws Exception {
         Film film = new Film();
         film.setName(null);
         film.setDescription("A good movie");
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Название фильма не может быть пустым.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'name'. Название не может быть пустым."));
     }
 
     @Test
-    void shouldThrowExceptionIfDescriptionIsNull() {
+    void shouldThrowExceptionIfDescriptionIsNull() throws Exception {
         Film film = new Film();
         film.setName("Test Movie");
         film.setDescription(null);
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Описание фильма не заполнено.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'description'. Описание не может быть пустым."));
     }
 
     @Test
-    void shouldThrowExceptionIfReleaseDateIsNull() {
+    void shouldThrowExceptionIfReleaseDateIsNull() throws Exception {
         Film film = new Film();
         film.setName("Test Movie");
         film.setDescription("A good movie");
         film.setReleaseDate(null);
         film.setDuration(120);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(film);
-        });
-        assertEquals("Дата релиза не заполнена.", exception.getMessage());
+        String jsonFilm = objectMapper.writeValueAsString(film);
+
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Ошибка валидации: поле 'releaseDate'. Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
     }
 
     @Test
-    void shouldUpdateFilmWithValidFields() {
+    void shouldUpdateFilmWithValidFields() throws Exception {
         Film film = new Film();
         film.setId(1L);
         film.setName("Test Movie");
@@ -133,21 +161,32 @@ public class FilmControllerTest {
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        controller.create(film);
+        String jsonFilm = objectMapper.writeValueAsString(film);
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        Film updatedFilm = new Film();
+        Film updatedFilm = film;
         updatedFilm.setId(1L);
         updatedFilm.setName("Updated Movie");
         updatedFilm.setDescription("Updated description");
 
-        Film result = controller.update(updatedFilm);
-        assertEquals("Updated Movie", result.getName());
-        assertEquals("Updated description", result.getDescription());
-        assertEquals(film.getReleaseDate(), result.getReleaseDate());
+
+        String jsonUpdatedFilm = objectMapper.writeValueAsString(updatedFilm);
+
+        mockMvc.perform(put("/films")
+                        .content(jsonUpdatedFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Movie"))
+                .andExpect(jsonPath("$.description").value("Updated description"));
+
+
     }
 
     @Test
-    void shouldNotUpdateFieldsIfNullProvided() {
+    void shouldNotUpdateFieldsIfNullProvided() throws Exception {
         Film film = new Film();
         film.setId(1L);
         film.setName("Test Movie");
@@ -155,35 +194,40 @@ public class FilmControllerTest {
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        controller.create(film);
+        String jsonFilm = objectMapper.writeValueAsString(film);
+        mockMvc.perform(post("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        Film updatedFilm = new Film();
+        Film updatedFilm = film;
         updatedFilm.setId(1L);
 
-        Film result = controller.update(updatedFilm);
+        String jsonUpdatedFilm = objectMapper.writeValueAsString(updatedFilm);
 
-        assertEquals("Test Movie", result.getName());
-        assertEquals("A good movie", result.getDescription());
-        assertEquals(film.getReleaseDate(), result.getReleaseDate());
-        assertEquals(film.getDuration(), result.getDuration());
+        mockMvc.perform(put("/films")
+                        .content(jsonUpdatedFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test Movie"))
+                .andExpect(jsonPath("$.description").value("A good movie"));
     }
 
     @Test
-    void shouldThrowExceptionIfFilmIdIsNotFound() {
+    void shouldThrowExceptionIfFilmIdIsNotFound() throws Exception {
         Film film = new Film();
-        film.setId(1L);
+        film.setId(999L);
         film.setName("Test Movie");
         film.setDescription("A good movie");
         film.setReleaseDate(LocalDate.now());
         film.setDuration(120);
 
-        Film updatedFilm = new Film();
-        updatedFilm.setId(999L);
-        updatedFilm.setName("Updated Movie");
+        String jsonFilm = objectMapper.writeValueAsString(film);
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            controller.update(updatedFilm);
-        });
-        assertEquals("Фильм с ID 999 не найден.", exception.getMessage());
+        mockMvc.perform(put("/films")
+                        .content(jsonFilm)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())  // Ожидается статус 404
+                .andExpect(jsonPath("$.errorMessage").value("Фильм с ID 999 не найден."));
     }
 }
