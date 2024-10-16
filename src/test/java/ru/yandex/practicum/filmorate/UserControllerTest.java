@@ -1,93 +1,129 @@
 package ru.yandex.practicum.filmorate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.controller.UserController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SpringBootTest
+@AutoConfigureMockMvc
 public class UserControllerTest {
 
-    private final UserController controller = new UserController();
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void shouldThrowExceptionIfEmailIsInvalid() {
+    void shouldThrowExceptionIfEmailIsInvalid() throws Exception {
         User user = new User();
         user.setEmail("invalidEmail");
         user.setLogin("testLogin");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(user);
-        });
-        assertEquals("Имейл должен быть указан и содержать символ @.", exception.getMessage());
+        String jsonUser = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .content(jsonUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("create.user.email: Email должен содержать символ @."));
     }
 
     @Test
-    void shouldThrowExceptionIfLoginIsInvalid() {
+    void shouldThrowExceptionIfLoginIsInvalid() throws Exception {
         User user = new User();
         user.setEmail("test@test.com");
         user.setLogin("invalid login");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(user);
-        });
-        assertEquals("Логин не может быть пустым и содержать пробелы.", exception.getMessage());
+        String jsonUser = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .content(jsonUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("create.user.login: Логин не может содержать пробелы."));
     }
 
     @Test
-    void shouldThrowExceptionIfBirthdayIsInFuture() {
+    void shouldThrowExceptionIfBirthdayIsInFuture() throws Exception {
         User user = new User();
         user.setEmail("test@test.com");
         user.setLogin("testLogin");
         user.setBirthday(LocalDate.of(3000, 1, 1));
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(user);
-        });
-        assertEquals("Дата рождения не может быть в будущем.", exception.getMessage());
+        String jsonUser = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .content(jsonUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("create.user.birthday: Дата рождения не может быть в будущем."));
     }
 
     @Test
-    void shouldThrowExceptionIfEmailIsNull() {
+    void shouldThrowExceptionIfEmailIsNull() throws Exception {
         User user = new User();
         user.setEmail(null);
         user.setLogin("testLogin");
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(user);
-        });
-        assertEquals("Имейл должен быть указан и содержать символ @.", exception.getMessage());
+        String jsonUser = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .content(jsonUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("create.user.email: Email должен быть указан."));
     }
 
     @Test
-    void shouldThrowExceptionIfLoginIsNull() {
+    void shouldThrowExceptionIfLoginIsNull() throws Exception {
         User user = new User();
         user.setEmail("test@test.com");
         user.setLogin(null);
         user.setBirthday(LocalDate.of(1990, 1, 1));
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(user);
-        });
-        assertEquals("Логин не может быть пустым и содержать пробелы.", exception.getMessage());
+        String jsonUser = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .content(jsonUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("create.user.login: Логин не может быть пустым."));
     }
 
     @Test
-    void shouldThrowExceptionIfBirthdayIsNull() {
+    void shouldThrowExceptionIfBirthdayIsNull() throws Exception {
         User user = new User();
         user.setEmail("test@test.com");
         user.setLogin("testLogin");
         user.setBirthday(null);
 
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            controller.create(user);
-        });
-        assertEquals("Дата рождения не заполнена.", exception.getMessage());
+        String jsonUser = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .content(jsonUser)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("create.user.birthday: Дата рождения не заполнена."));
     }
 }
