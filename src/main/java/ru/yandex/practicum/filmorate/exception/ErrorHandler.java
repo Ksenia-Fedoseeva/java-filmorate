@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,8 @@ import java.util.NoSuchElementException;
 @Slf4j
 @ControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Error> handleValidationException(ValidationException e) {
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<Error> handleValidationException(Exception e) {
         log.error("Ошибка",e);
         Error error = new Error(e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -25,19 +26,6 @@ public class ErrorHandler {
         log.error("Ошибка",e);
         Error error = new Error(e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Error> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("Ошибка валидации параметров: {}", e.getMessage());
-
-        StringBuilder errorMessage = new StringBuilder("Ошибка валидации: ");
-        e.getBindingResult().getFieldErrors().forEach(error -> {
-            errorMessage.append(String.format("поле '%s'. %s", error.getField(), error.getDefaultMessage()));
-        });
-
-        Error error = new Error(errorMessage.toString());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

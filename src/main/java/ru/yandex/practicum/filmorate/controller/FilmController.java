@@ -3,14 +3,16 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.annotations.ValidationGroup;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.*;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor
@@ -28,17 +30,15 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    @Validated({ValidationGroup.OnCreate.class})
+    public Film create(@RequestBody @Valid Film film) {
         return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    @Validated({ValidationGroup.OnUpdate.class})
+    public Film update(@RequestBody @Valid Film film) {
         Film existingFilm = filmService.getFilmById(film.getId());
-
-        if (existingFilm == null) {
-            throw new ValidationException("Фильм с таким ID не найден.");
-        }
 
         if (film.getName() != null) {
             existingFilm.setName(film.getName());

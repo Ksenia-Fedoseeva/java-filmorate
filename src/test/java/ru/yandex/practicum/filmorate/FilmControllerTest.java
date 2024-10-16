@@ -41,7 +41,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'name'. Название не может быть пустым."));
+                        .value("create.film.name: Название не может быть пустым."));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'description'. Описание не может превышать 200 символов."));
+                        .value("create.film.description: Описание не может превышать 200 символов."));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'releaseDate'. Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
+                        .value("create.film.releaseDate: Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'duration'. Продолжительность фильма должна быть положительным числом."));
+                        .value("create.film.duration: Продолжительность фильма должна быть положительным числом."));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'name'. Название не может быть пустым."));
+                        .value("create.film.name: Название не может быть пустым."));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'description'. Описание не может быть пустым."));
+                        .value("create.film.description: Описание не может быть пустым."));
     }
 
     @Test
@@ -149,13 +149,12 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'releaseDate'. Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
+                        .value("create.film.releaseDate: Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
     }
 
     @Test
     void shouldUpdateFilmWithValidFields() throws Exception {
         Film film = new Film();
-        film.setId(1L);
         film.setName("Test Movie");
         film.setDescription("A good movie");
         film.setReleaseDate(LocalDate.now());
@@ -188,7 +187,6 @@ public class FilmControllerTest {
     @Test
     void shouldNotUpdateFieldsIfNullProvided() throws Exception {
         Film film = new Film();
-        film.setId(1L);
         film.setName("Test Movie");
         film.setDescription("A good movie");
         film.setReleaseDate(LocalDate.now());
@@ -227,7 +225,7 @@ public class FilmControllerTest {
         mockMvc.perform(put("/films")
                         .content(jsonFilm)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())  // Ожидается статус 404
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errorMessage").value("Фильм с ID 999 не найден."));
     }
 }

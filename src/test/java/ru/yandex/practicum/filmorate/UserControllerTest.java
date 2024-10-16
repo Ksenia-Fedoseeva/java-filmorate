@@ -39,7 +39,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'email'. Email должен содержать символ @."));
+                        .value("create.user.email: Email должен содержать символ @."));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'login'. Логин не может содержать пробелы."));
+                        .value("create.user.login: Логин не может содержать пробелы."));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'birthday'. Дата рождения не может быть в будущем."));
+                        .value("create.user.birthday: Дата рождения не может быть в будущем."));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'email'. Email должен быть указан."));
+                        .value("create.user.email: Email должен быть указан."));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'login'. Логин не может быть пустым."));
+                        .value("create.user.login: Логин не может быть пустым."));
     }
 
     @Test
@@ -124,6 +124,6 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Ошибка валидации: поле 'birthday'. Дата рождения не заполнена."));
+                        .value("create.user.birthday: Дата рождения не заполнена."));
     }
 }
