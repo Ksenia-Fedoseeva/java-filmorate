@@ -29,15 +29,15 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @PostMapping
     @Validated({ValidationGroup.OnCreate.class})
-    public User create(@RequestBody @Valid User user) {
+    @PostMapping
+    public User create(@Valid @RequestBody User user) {
         return userService.addUser(user);
     }
 
-    @PutMapping
     @Validated({ValidationGroup.OnUpdate.class})
-    public User update(@RequestBody @Valid User user) {
+    @PutMapping
+    public User update(@Valid @RequestBody User user) {
         User existingUser = userService.getUserById(user.getId());
 
         if (user.getName() != null) {

@@ -29,15 +29,15 @@ public class FilmController {
         return filmService.getFilmById(id);
     }
 
-    @PostMapping
     @Validated({ValidationGroup.OnCreate.class})
-    public Film create(@RequestBody @Valid Film film) {
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
         return filmService.addFilm(film);
     }
 
-    @PutMapping
     @Validated({ValidationGroup.OnUpdate.class})
-    public Film update(@RequestBody @Valid Film film) {
+    @PutMapping
+    public Film update(@Valid @RequestBody Film film) {
         Film existingFilm = filmService.getFilmById(film.getId());
 
         if (film.getName() != null) {

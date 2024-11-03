@@ -16,22 +16,19 @@ public class User {
     @NotNull(groups = ValidationGroup.OnUpdate.class, message = "ID должно быть указано при обновлении.")
     private Long id;
 
-    @NotBlank(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
-            message = "Email должен быть указан.")
+    @NotBlank(groups = {ValidationGroup.OnCreate.class}, message = "Email должен быть указан.")
     @Email(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
             message = "Email должен содержать символ @.")
     private String email;
 
-    @NotBlank(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
-            message = "Логин не может быть пустым.")
+    @NotBlank(groups = {ValidationGroup.OnCreate.class}, message = "Логин не может быть пустым.")
     @Pattern(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class}, regexp = "\\S+",
             message = "Логин не может содержать пробелы.")
     private String login;
 
     private String name;
 
-    @NotNull(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
-            message = "Дата рождения не заполнена.")
+    @NotNull(groups = {ValidationGroup.OnCreate.class}, message = "Дата рождения не заполнена.")
     @PastOrPresent(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
             message = "Дата рождения не может быть в будущем.")
     private LocalDate birthday;
