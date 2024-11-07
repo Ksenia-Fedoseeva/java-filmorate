@@ -7,12 +7,14 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.Collection;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GenreService {
 
     private final GenreStorage genreDbStorage;
+
     public Collection<Genre> getAllGenres() {
         log.info("Получение жанров");
         return genreDbStorage.getAllGenres();
