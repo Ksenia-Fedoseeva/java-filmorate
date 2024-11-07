@@ -74,7 +74,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
         jdbcTemplate.update("DELETE FROM film_genre WHERE film_id = ?",
                 film.getId());
-        if(film.getGenres() != null) {
+        if (film.getGenres() != null) {
             film.getGenres().forEach(genre -> {
                 jdbcTemplate.update("INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)",
                         film.getId(),
@@ -141,7 +141,7 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY f.film_id\n" +
                 "HAVING like_count > 0\n" +
                 "ORDER BY like_count DESC " +
-                "LIMIT ?" ;
+                "LIMIT ?";
         return jdbcTemplate.query(sql, new FilmLikeMapper(), count);
     }
 }
