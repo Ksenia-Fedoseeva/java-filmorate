@@ -20,6 +20,13 @@ public class ErrorHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<Error> handleBadRequestException(Exception e) {
+        log.error("Ошибка",e);
+        Error error = new Error(e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
     public ResponseEntity<Error> handleNotFoundException(NotFoundException e) {
         log.error("Ошибка",e);

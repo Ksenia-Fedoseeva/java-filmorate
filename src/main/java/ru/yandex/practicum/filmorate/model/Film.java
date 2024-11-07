@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.annotations.ValidationGroup;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -31,6 +32,13 @@ public class Film {
     @Positive(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
             message = "Продолжительность фильма должна быть положительным числом.")
     private int duration;
+
+    @NotNull(groups = {ValidationGroup.OnCreate.class},
+            message = "Рейтинг фильма не может быть пустым.")
+    private MpaRating mpa;
+
+//    @NotEmpty(groups = {ValidationGroup.OnCreate.class}, message = "Список жанров не может быть пустым.") // todo Странное решение, что при создании фильма postman коллекция допускает отсутствие жанров
+    private List<Genre> genres;
 
     @JsonIgnore
     private Set<Long> likes = new HashSet<>();
