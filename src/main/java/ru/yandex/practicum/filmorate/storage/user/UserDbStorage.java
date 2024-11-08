@@ -77,46 +77,51 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriend(Long id, Long friendId) {
-        String checkSql = "SELECT status FROM friendship WHERE user_id = ? AND friend_id = ?";
-        Boolean existingStatus = jdbcTemplate.query(checkSql, rs -> {
-            if (rs.next()) {
-                return rs.getBoolean("status");
-            }
-            return null;
-        }, friendId, id);
+        Boolean existingStatus = getFriendshipStatus(friendId, id);
 
         if (existingStatus == null) {
-            String insertSql = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, false)";
-            jdbcTemplate.update(insertSql, id, friendId);
+            addFriendship(id, friendId, false);
         } else if (!existingStatus) {
-            String insertSql = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, true)";
-            jdbcTemplate.update(insertSql, id, friendId);
-
-            String updateSql = "UPDATE friendship SET status = true WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(updateSql, friendId, id);
+            addFriendship(id, friendId, true);
+            updateFriendshipStatus(friendId, id, true);
         }
     }
 
     @Override
     public void removeFriend(Long id, Long friendId) {
-        String checkSql = "SELECT status FROM friendship WHERE user_id = ? AND friend_id = ?";
-        Boolean existingStatus = jdbcTemplate.query(checkSql, rs -> {
+        Boolean existingStatus = getFriendshipStatus(friendId, id);
+
+        if (existingStatus != null && existingStatus) {
+            deleteFriendship(id, friendId);
+            updateFriendshipStatus(friendId, id, false);
+        } else {
+            deleteFriendship(id, friendId);
+        }
+    }
+
+    private Boolean getFriendshipStatus(Long userId, Long friendId) {
+        String sql = "SELECT status FROM friendship WHERE user_id = ? AND friend_id = ?";
+        return jdbcTemplate.query(sql, rs -> {
             if (rs.next()) {
                 return rs.getBoolean("status");
             }
             return null;
-        }, friendId, id);
+        }, userId, friendId);
+    }
 
-        if (existingStatus != null && existingStatus) {
-            String deleteSql = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(deleteSql, id, friendId);
+    private void addFriendship(Long userId, Long friendId, boolean status) {
+        String sql = "INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, userId, friendId, status);
+    }
 
-            String updateSql = "UPDATE friendship SET status = false WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(updateSql, friendId, id);
-        } else {
-            String deleteSql = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
-            jdbcTemplate.update(deleteSql, id, friendId);
-        }
+    private void updateFriendshipStatus(Long userId, Long friendId, boolean status) {
+        String sql = "UPDATE friendship SET status = ? WHERE user_id = ? AND friend_id = ?";
+        jdbcTemplate.update(sql, status, userId, friendId);
+    }
+
+    private void deleteFriendship(Long userId, Long friendId) {
+        String sql = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
+        jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override

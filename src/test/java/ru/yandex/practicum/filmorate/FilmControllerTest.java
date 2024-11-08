@@ -209,7 +209,7 @@ public class FilmControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("create.film.releaseDate: Дата релиза не может быть раньше 28 декабря 1895 года или быть пустой."));
+                        .value("create.film.releaseDate: Дата релиза не должна быть пустой при создании."));
     }
 
     @Test

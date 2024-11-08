@@ -26,7 +26,8 @@ public class Film {
             message = "Описание не может превышать 200 символов.")
     private String description;
 
-    @ValidReleaseDate(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class})
+    @NotNull(groups = {ValidationGroup.OnCreate.class}, message = "Дата релиза не должна быть пустой при создании.")
+    @ValidReleaseDate(groups = {ValidationGroup.OnCreate.class})
     private LocalDate releaseDate;
 
     @Positive(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
@@ -37,7 +38,6 @@ public class Film {
             message = "Рейтинг фильма не может быть пустым.")
     private MpaRating mpa;
 
-//    @NotEmpty(groups = {ValidationGroup.OnCreate.class}, message = "Список жанров не может быть пустым.") // todo Странное решение, что при создании фильма postman коллекция допускает отсутствие жанров
     private List<Genre> genres;
 
     @JsonIgnore
