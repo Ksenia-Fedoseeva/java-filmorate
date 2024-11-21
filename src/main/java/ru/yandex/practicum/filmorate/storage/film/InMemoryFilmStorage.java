@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -51,5 +52,20 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (!films.containsKey(id)) {
             throw new NotFoundException("Фильм с ID " + id + " не найден.");
         }
+    }
+
+    @Override
+    public void addLike(Long filmId, Long userId) {
+        throw new RuntimeException("Метод не поддерживается");
+    }
+
+    @Override
+    public void removeLike(Long filmId, Long userId) {
+        throw new RuntimeException("Метод не поддерживается");
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        throw new RuntimeException("Метод не поддерживается");
     }
 }

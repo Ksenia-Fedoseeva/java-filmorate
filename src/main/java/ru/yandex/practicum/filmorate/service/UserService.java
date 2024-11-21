@@ -8,66 +8,56 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserStorage userStorage;
+    private final UserStorage userDbStorage;
 
     public User addUser(User user) {
         log.info("Добавление юзера – {}", user);
-        return userStorage.addUser(user);
+        return userDbStorage.addUser(user);
     }
 
     public User updateUser(User user) {
         log.info("Обновление юзера – {}", user);
-        return userStorage.updateUser(user);
+        return userDbStorage.updateUser(user);
     }
 
     public Collection<User> getAllUsers() {
         log.info("Получение юзеров");
-        return userStorage.getAllUsers();
+        return userDbStorage.getAllUsers();
     }
 
     public User getUserById(Long id) {
-        User user = userStorage.getUserById(id);
+        User user = userDbStorage.getUserById(id);
         log.info("Получение юзера – {}", user);
         return user;
     }
 
     public void addFriend(Long userId, Long friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-        log.info("Юзер {} и юзер {} теперь друзья", user, friend);
+        userDbStorage.checkUserExist(userId);
+        userDbStorage.checkUserExist(friendId);
+        userDbStorage.addFriend(userId, friendId);
+        log.info("Юзер {} и юзер {} теперь друзья", userId, friendId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        User user = userStorage.getUserById(userId);
-        User friend = userStorage.getUserById(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
-        log.info("Юзер {} и юзер {} больше не друзья", user, friend);
+        userDbStorage.checkUserExist(userId);
+        userDbStorage.checkUserExist(friendId);
+        userDbStorage.removeFriend(userId, friendId);
+        log.info("Юзер {} и юзер {} больше не друзья", userId, friendId);
     }
 
     public List<User> getFriends(Long userId) {
-        User user = userStorage.getUserById(userId);
-        log.info("Получаем друзей юзера {}", user);
-        return user.getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        log.info("Получаем друзей юзера {}", userId);
+        userDbStorage.checkUserExist(userId);
+        return userDbStorage.getFriends(userId);
     }
 
     public List<User> getCommonFriends(Long userId, Long otherUserId) {
-        User user = userStorage.getUserById(userId);
-        User otherUser = userStorage.getUserById(otherUserId);
-        log.info("Получаем общих друзей юзера {} и другого юзера {}", user, otherUser);
-        return user.getFriends().stream()
-                .filter(otherUser.getFriends()::contains)
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        log.info("Получаем общих друзей юзера {} и другого юзера {}", userId, otherUserId);
+        return userDbStorage.getCommonFriends(userId, otherUserId);
     }
 }

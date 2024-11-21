@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -54,5 +55,25 @@ public class InMemoryUserStorage implements UserStorage {
         if (!users.containsKey(id)) {
             throw new NotFoundException("Пользователь с ID " + id + " не найден.");
         }
+    }
+
+    @Override
+    public void addFriend(Long id, Long friendId) {
+        throw new RuntimeException("Метод не поддерживается");
+    }
+
+    @Override
+    public void removeFriend(Long id, Long friendId) {
+        throw new RuntimeException("Метод не поддерживается");
+    }
+
+    @Override
+    public List<User> getFriends(Long id) {
+        throw new RuntimeException("Метод не поддерживается");
+    }
+
+    @Override
+    public List<User> getCommonFriends(Long id, Long otherId) {
+        throw new RuntimeException("Метод не поддерживается");
     }
 }

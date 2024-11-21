@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.annotations.ValidationGroup;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -25,12 +26,19 @@ public class Film {
             message = "Описание не может превышать 200 символов.")
     private String description;
 
-    @ValidReleaseDate(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class})
+    @NotNull(groups = {ValidationGroup.OnCreate.class}, message = "Дата релиза не должна быть пустой при создании.")
+    @ValidReleaseDate(groups = {ValidationGroup.OnCreate.class})
     private LocalDate releaseDate;
 
     @Positive(groups = {ValidationGroup.OnCreate.class, ValidationGroup.OnUpdate.class},
             message = "Продолжительность фильма должна быть положительным числом.")
     private int duration;
+
+    @NotNull(groups = {ValidationGroup.OnCreate.class},
+            message = "Рейтинг фильма не может быть пустым.")
+    private MpaRating mpa;
+
+    private List<Genre> genres;
 
     @JsonIgnore
     private Set<Long> likes = new HashSet<>();
